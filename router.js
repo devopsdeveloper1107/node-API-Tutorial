@@ -59,6 +59,25 @@ Router.get("/api/countrystate",(req, res)=>{
 });
 
 
+Router.post("/api/adduser", (req, res)=>{
+    const username= req.body.username;
+    const email= req.body.email;
+    const phone= req.body.phone;
+    const address= req.body.address;
+    const status= req.body.status;
+    var sql= `INSERT INTO tbl_user(username, email, phone, address, status) 
+    VALUES("${username}", "${email}","${phone}", "${address}", "${status}" )`;
+    dbconnected.query(sql, (err, result)=>{
+        if(!err)
+        {
+        res.status(200).json({success:"User Record Inseted Successfully"});
+        } else{
+            console.log(err);
+        }
+
+    });
+
+});
 
 
 
