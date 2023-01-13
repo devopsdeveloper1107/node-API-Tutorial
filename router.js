@@ -1,13 +1,10 @@
 const express= require("express");
 const Router= express.Router();
-
 const dbconnected= require("./dbconnection");
-
 Router.get("/",(req, res)=>{
     const data=[{name:"David Test",email:"john007@gmail.com"}];
     res.send(data);
 });
-
 Router.get("/api/user",(req, res)=>{
     dbconnected.query("select * from tbl_user", (err, rows, fields)=>{
         if(!err)
@@ -17,8 +14,7 @@ Router.get("/api/user",(req, res)=>{
             console.log(err);
         }
     })
-})
-
+});
 Router.get("/api/country", (req, res)=>{
     dbconnected.query("select * from tbl_country",(err, rows)=>{
         if(!err){
@@ -29,10 +25,8 @@ Router.get("/api/country", (req, res)=>{
     });
 
 });
-
 Router.get("/api/state/:id",(req, res)=>{
-    dbconnected.query("select * from tbl_state where countryid='"+req.params.id +"'   ", (err, rows)=>{
-     
+    dbconnected.query("select * from tbl_state where countryid='"+req.params.id +"' ", (err, rows)=>{     
         if(!err)
         {
         res.send(rows);
@@ -40,26 +34,8 @@ Router.get("/api/state/:id",(req, res)=>{
             console.log(err);
         }
     });
-
 });
-
-
-Router.get("/api/countrystate",(req, res)=>{
-    var sql = "SELECT * FROM tbl_country";
-    dbconnected.query(sql, (err, rows)=>{
-     
-        if(!err)
-        {
-        res.send(rows);
-        } else{
-            console.log(err);
-        }
-    });
-
-});
-
-
-Router.post("/api/adduser", (req, res)=>{
+Router.post("/api/adduser/:id", (req, res)=>{
     const username= req.body.username;
     const email= req.body.email;
     const phone= req.body.phone;
@@ -74,13 +50,30 @@ Router.post("/api/adduser", (req, res)=>{
         } else{
             console.log(err);
         }
-
     });
-
 });
-
-
-
+Router.get("/api/edituser/:id", (req, res)=>{
+    dbconnected.query("select * from tbl_user where userid='"+ req.params.id+"' ",(err, rows)=>{
+      if(!err)
+      {
+         res.send(rows[0]);
+      } else{
+        console.log(err);
+      }
+    });
+});
+Router.put("/api/updateuser/:id", (req, res)=>{
+    const userdata=[req.body.username, req.body.email, req.body.phone, req.body.address, req.body.status];
+    var sql= "UPDATE tbl_user SET username=?, email=?, phone=?, address=?, status=? where userid='"+ req.params.id+"' ";
+    dbconnected.query(sql, userdata,(err, result)=>{
+        if(!err)
+        {
+        res.status(200).json({success:"User Record Updated successfully"});
+        } else{
+            console.log(err);
+        }
+    });
+});
 
 
 module.exports= Router;
